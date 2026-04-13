@@ -1147,3 +1147,235 @@ body {
     grid-template-columns: 1fr;
   }
 }
+
+/* === TRUST BAR === */
+.trust-bar {
+  background: #111111;
+  padding: 16px 40px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+}
+
+.trust-bar-items {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 0;
+}
+
+.trust-bar-item {
+  color: #ffffff;
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 4px 20px;
+  position: relative;
+  white-space: nowrap;
+}
+
+.trust-bar-item + .trust-bar-item::before {
+  content: '·';
+  position: absolute;
+  left: 0;
+  color: rgba(255,255,255,0.3);
+  transform: translateX(-50%);
+}
+
+@media (max-width: 768px) {
+  .trust-bar { padding: 12px 16px; }
+  .trust-bar-item { font-size: 11px; padding: 4px 12px; }
+}
+
+/* === INSTALL STATS (Contractors) === */
+.install-stats {
+  background: var(--light-bg);
+  padding: 48px 40px;
+  text-align: center;
+}
+
+.install-stats-inner {
+  max-width: 700px;
+  margin: 0 auto;
+}
+
+.install-stats-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--orange);
+  margin-bottom: 24px;
+}
+
+.install-stats-grid {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+  flex-wrap: wrap;
+}
+
+.install-stat {
+  padding: 0 40px;
+  position: relative;
+}
+
+.install-stat + .install-stat {
+  border-left: 1px solid #ddd;
+}
+
+.install-stat-number {
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 400;
+  color: var(--dark);
+  letter-spacing: -0.03em;
+  line-height: 1;
+  margin-bottom: 6px;
+}
+
+.install-stat-label {
+  font-size: 13px;
+  color: #6f6c69;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+}
+
+@media (max-width: 600px) {
+  .install-stats { padding: 36px 20px; }
+  .install-stat { padding: 16px 20px; }
+  .install-stat + .install-stat { border-left: none; border-top: 1px solid #ddd; }
+  .install-stats-grid { flex-direction: column; }
+}
+
+/* === WHAT WE RETURN (Architects) === */
+.what-we-return {
+  padding: 64px 40px;
+  background: var(--light-bg);
+}
+
+.what-we-return-inner {
+  max-width: 640px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.what-we-return h2 {
+  font-size: clamp(24px, 3vw, 34px);
+  font-weight: 400;
+  color: var(--dark);
+  margin-bottom: 8px;
+  letter-spacing: -0.01em;
+}
+
+.what-we-return .wwr-subtitle {
+  font-size: 16px;
+  color: #6f6c69;
+  margin-bottom: 36px;
+}
+
+.wwr-list {
+  display: inline-flex;
+  flex-direction: column;
+  gap: 16px;
+  text-align: left;
+}
+
+.wwr-item {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-size: 16px;
+  color: var(--dark);
+  font-weight: 500;
+}
+
+.wwr-check {
+  flex-shrink: 0;
+  width: 26px;
+  height: 26px;
+  background: var(--orange);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+}
+
+.wwr-check svg {
+  width: 13px;
+  height: 13px;
+}
+
+@media (max-width: 768px) {
+  .what-we-return { padding: 48px 20px; }
+}
+
+/* === SOCIAL PROOF BAR === */
+.social-proof {
+  padding: 48px 40px;
+  background: var(--light-bg);
+  text-align: center;
+}
+
+.social-proof-inner {
+  max-width: 760px;
+  margin: 0 auto;
+}
+
+.social-proof-main {
+  font-size: 17px;
+  color: var(--dark);
+  line-height: 1.6;
+  margin-bottom: 12px;
+  font-weight: 400;
+}
+
+.social-proof-sub {
+  font-size: 13px;
+  color: #999;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+@media (max-width: 768px) {
+  .social-proof { padding: 36px 20px; }
+  .social-proof-main { font-size: 15px; }
+}
+
+/* === FILE SIZE WARNING === */
+.file-size-warning {
+  background: #fff3f0;
+  border: 1px solid #FF5100;
+  border-radius: 8px;
+  padding: 12px 16px;
+  margin-top: 12px;
+  color: #333;
+  font-size: 14px;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  line-height: 1.5;
+}
+
+/* === HERO CREDENTIAL LINE === */
+.hero-credential {
+  margin-top: 20px;
+  font-size: 13px;
+  color: rgba(255,255,255,0.5);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.hero-credential span {
+  color: rgba(255,255,255,0.4);
+  margin: 0 8px;
+}
+
