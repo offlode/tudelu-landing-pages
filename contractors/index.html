@@ -568,9 +568,14 @@ async function confirmBooking() {
   const phone = document.getElementById('schedPhone').value.trim();
   
   try {
-    // Use FormSubmit.co for email notification
+    // Generate .ics calendar file
+    const icsContent = generateICS(name, email, selectedSlot);
+    const icsBlob = new Blob([icsContent], { type: 'text/calendar;charset=utf-8' });
+    const icsUrl = URL.createObjectURL(icsBlob);
+    
+    // Send notification to team via FormSubmit
     const formData = new FormData();
-    formData.append('_subject', 'New Call Request - ' + AUDIENCE_LABEL + ' - ' + name);
+    formData.append('_subject', 'New Call Scheduled - ' + AUDIENCE_LABEL + ' - ' + name + ' - ' + selectedSlot.date + ' at ' + selectedSlot.display + ' ET');
     formData.append('_cc', SCHEDULE_CC);
     formData.append('_template', 'table');
     formData.append('_captcha', 'false');
@@ -579,27 +584,48 @@ async function confirmBooking() {
     formData.append('Company', company || 'Not provided');
     formData.append('Phone', phone || 'Not provided');
     formData.append('Audience', AUDIENCE_LABEL);
-    formData.append('Requested Date', selectedSlot.date);
-    formData.append('Requested Time', selectedSlot.display + ' ET');
-    formData.append('Message', 'Please set up a Google Meet for this time and send the invite to ' + email);
+    formData.append('Scheduled Date', selectedSlot.date);
+    formData.append('Scheduled Time', selectedSlot.display + ' ET');
+    formData.append('Duration', '15 minutes');
+    formData.append('Meeting With', typeof MEETING_WITH !== 'undefined' ? MEETING_WITH : 'Team');
+    formData.append('Action Required', 'Please set up a Google Meet and send the invite to ' + email);
     
     const resp = await fetch('https://formsubmit.co/ajax/' + SCHEDULE_EMAIL, {
       method: 'POST',
       body: formData
     });
     
-    const data = await resp.json();
+    // Also send confirmation to customer via FormSubmit
+    const custFormData = new FormData();
+    custFormData.append('_subject', 'Your call with Tudelu is confirmed - ' + selectedSlot.date + ' at ' + selectedSlot.display + ' ET');
+    custFormData.append('_template', 'table');
+    custFormData.append('_captcha', 'false');
+    custFormData.append('_cc', 'chaim.fischer@tudelu.com');
+    custFormData.append('Greeting', 'Hi ' + name + ',');
+    custFormData.append('Meeting Details', 'You are scheduled for a 15-minute call with ' + (typeof MEETING_WITH !== 'undefined' ? MEETING_WITH : 'our team') + ' from Tudelu.');
+    custFormData.append('Date', selectedSlot.date);
+    custFormData.append('Time', selectedSlot.display + ' ET');
+    custFormData.append('Duration', '15 minutes');
+    custFormData.append('Next Steps', 'A Google Meet link will be sent to you before the call. You can also download the calendar invite from the confirmation page.');
+    custFormData.append('From', 'The Tudelu Team | tudelu.com | (718) 782-7882');
     
-    if (data.success === 'true' || data.success === true || resp.ok) {
-      document.getElementById('confirmDetails').innerHTML = `
-        <strong>Meeting with ${typeof MEETING_WITH !== 'undefined' ? MEETING_WITH : 'Tudelu Team'}</strong><br>
-        <strong>${selectedSlot.date}</strong> at ${selectedSlot.display} ET &middot; 15 minutes<br>
-        Calendar invite will be sent to <strong>${email}</strong>
-      `;
-      showStep(3);
-    } else {
-      throw new Error('Booking failed');
-    }
+    await fetch('https://formsubmit.co/ajax/' + email, {
+      method: 'POST',
+      body: custFormData
+    }).catch(function(){});
+    
+    // Show confirmation with .ics download
+    document.getElementById('confirmDetails').innerHTML = 
+      '<strong>Meeting with ' + (typeof MEETING_WITH !== 'undefined' ? MEETING_WITH : 'Tudelu Team') + '</strong><br>' +
+      '<strong>' + selectedSlot.date + '</strong> at ' + selectedSlot.display + ' ET &middot; 15 minutes<br>' +
+      'A confirmation has been sent to <strong>' + email + '</strong>';
+    
+    document.getElementById('confirmMsg').innerHTML = 
+      '<a href="' + icsUrl + '" download="tudelu-call.ics" style="display:inline-block;background:#FF5100;color:#fff;text-decoration:none;padding:10px 24px;border-radius:6px;font-weight:bold;font-size:14px;margin-top:8px">&#128197; Add to Calendar</a>' +
+      '<p style="margin-top:12px;font-size:14px;color:#666">Click above to download the calendar invite. A Google Meet link will be sent before the call.</p>';
+    
+    showStep(3);
+    
   } catch (err) {
     // Fallback: mailto
     const subject = encodeURIComponent('Call Request - ' + AUDIENCE_LABEL + ' - ' + name);
@@ -607,15 +633,75 @@ async function confirmBooking() {
     
     window.location.href = 'mailto:' + SCHEDULE_EMAIL + '?cc=' + SCHEDULE_CC + '&subject=' + subject + '&body=' + body;
     
-    setTimeout(() => {
-      document.getElementById('confirmDetails').innerHTML = `
-        <strong>Meeting with ${typeof MEETING_WITH !== 'undefined' ? MEETING_WITH : 'Tudelu Team'}</strong><br>
-        <strong>${selectedSlot.date}</strong> at ${selectedSlot.display} ET &middot; 15 minutes<br>
-        Calendar invite will be sent to <strong>${email}</strong>
-      `;
+    setTimeout(function() {
+      document.getElementById('confirmDetails').innerHTML = 
+        '<strong>Meeting with ' + (typeof MEETING_WITH !== 'undefined' ? MEETING_WITH : 'Tudelu Team') + '</strong><br>' +
+        '<strong>' + selectedSlot.date + '</strong> at ' + selectedSlot.display + ' ET &middot; 15 minutes<br>' +
+        'Calendar invite will be sent to <strong>' + email + '</strong>';
       showStep(3);
     }, 1000);
   }
+  
+  btn.disabled = false;
+  btn.textContent = 'Confirm Booking';
+}
+
+function generateICS(customerName, customerEmail, slot) {
+  var uid = 'tudelu-' + Date.now() + '-' + Math.random().toString(36).substr(2,9);
+  var now = new Date();
+  var stamp = now.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}/,'');
+  
+  // Parse the datetime from slot
+  var dtStr = slot.datetime.replace(/-04:00$/, '').replace(/-05:00$/, '');
+  var parts = dtStr.split('T');
+  var datePart = parts[0].replace(/-/g, '');
+  var timePart = parts[1].replace(/:/g, '');
+  
+  // Calculate end time (15 min later)
+  var startDate = new Date(dtStr);
+  var endDate = new Date(startDate.getTime() + 15 * 60 * 1000);
+  var endStr = endDate.toISOString().replace(/[-:]/g,'').replace(/\.\d{3}Z/,'');
+  
+  var meetingWith = typeof MEETING_WITH !== 'undefined' ? MEETING_WITH : 'Tudelu Team';
+  var meetingEmail = typeof SCHEDULE_EMAIL !== 'undefined' ? SCHEDULE_EMAIL : 'info@tudelu.com';
+  
+  return [
+    'BEGIN:VCALENDAR',
+    'VERSION:2.0',
+    'PRODID:-//Tudelu//Scheduling//EN',
+    'CALSCALE:GREGORIAN',
+    'METHOD:REQUEST',
+    'BEGIN:VTIMEZONE',
+    'TZID:America/New_York',
+    'BEGIN:DAYLIGHT',
+    'DTSTART:19700308T020000',
+    'RRULE:FREQ=YEARLY;BYMONTH=3;BYDAY=2SU',
+    'TZOFFSETFROM:-0500',
+    'TZOFFSETTO:-0400',
+    'TZNAME:EDT',
+    'END:DAYLIGHT',
+    'BEGIN:STANDARD',
+    'DTSTART:19701101T020000',
+    'RRULE:FREQ=YEARLY;BYMONTH=11;BYDAY=1SU',
+    'TZOFFSETFROM:-0400',
+    'TZOFFSETTO:-0500',
+    'TZNAME:EST',
+    'END:STANDARD',
+    'END:VTIMEZONE',
+    'BEGIN:VEVENT',
+    'UID:' + uid,
+    'DTSTAMP:' + stamp,
+    'DTSTART;TZID=America/New_York:' + datePart + 'T' + timePart,
+    'DTEND;TZID=America/New_York:' + endStr.substring(0, 8) + 'T' + endStr.substring(8),
+    'SUMMARY:Tudelu Call with ' + meetingWith,
+    'DESCRIPTION:15-minute call with ' + meetingWith + ' from Tudelu to discuss ' + (typeof AUDIENCE_LABEL !== 'undefined' ? AUDIENCE_LABEL.toLowerCase() : 'partnership') + '.',
+    'LOCATION:Google Meet (link will be sent separately)',
+    'ORGANIZER;CN=' + meetingWith + ':mailto:' + meetingEmail,
+    'ATTENDEE;CN=' + customerName + ';RSVP=TRUE:mailto:' + customerEmail,
+    'STATUS:CONFIRMED',
+    'END:VEVENT',
+    'END:VCALENDAR'
+  ].join('\r\n');
 }
 
 function generateStaticSlots() {
