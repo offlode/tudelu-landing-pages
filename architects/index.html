@@ -486,7 +486,7 @@ async function submitDrawings() {
 let selectedSlot = null;
 let availableDays = [];
 
-function openSchedule() {
+function openSchedule() { window.open('https://www.perplexity.ai/computer/a/tudelu-scheduling-qYOYgo9sRnOSXAd8Rj77yA#architects.html', '_blank'); return; // OLD CODE BELOW
   document.getElementById('scheduleOverlay').classList.add('show');
   document.body.style.overflow = 'hidden';
   if (typeof MEETING_WITH !== 'undefined') {
@@ -580,7 +580,7 @@ async function confirmBooking() {
   var backendOk = false;
   var meetingWith = typeof MEETING_WITH !== 'undefined' ? MEETING_WITH : 'our team';
   try {
-    const BACKEND = 'https://sites.pplx.app/sites/proxy/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcmVmaXgiOiJ3ZWIvZGlyZWN0LWZpbGVzL2NvbXB1dGVyLzIzZTA2ZmYxLWE4OWMtNDA0Mi05MDc3LTE5ODRmZGYzMWU1MC90dWRlbHUtc2NoZWR1bGluZy1iYWNrZW5kLyIsInNpZCI6IjIzZTA2ZmYxLWE4OWMtNDA0Mi05MDc3LTE5ODRmZGYzMWU1MCIsImV4cCI6MTc3NjI3MTk1Nn0.taRrqA_wJ68Ra3QIxc14g4VNG-lap__TjhUJ7rtGwrw/web/direct-files/computer/23e06ff1-a89c-4042-9077-1984fdf31e50/tudelu-scheduling-backend/port/8000';
+    const BACKEND = 'https://sites.pplx.app/sites/proxy/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcmVmaXgiOiJ3ZWIvZGlyZWN0LWZpbGVzL2NvbXB1dGVyLzIzZTA2ZmYxLWE4OWMtNDA0Mi05MDc3LTE5ODRmZGYzMWU1MC90dWRlbHUtc2NoZWR1bGluZy1hcHAvIiwic2lkIjoiMjNlMDZmZjEtYTg5Yy00MDQyLTkwNzctMTk4NGZkZjMxZTUwIiwiZXhwIjoxNzc2Mjc1Mjc5fQ.T_Wvymwlq_OT_JxzicZ2UXdGuwB1Xa1zrl4knDk3T6c/web/direct-files/computer/23e06ff1-a89c-4042-9077-1984fdf31e50/tudelu-scheduling-app/port/8000';
     const resp = await fetch(BACKEND + '/api/book', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
