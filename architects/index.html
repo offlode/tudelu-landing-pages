@@ -269,9 +269,10 @@
 const AUDIENCE_KEY = 'architects';
 const AUDIENCE_LABEL = 'Architects & Designers';
 const DRAWINGS_EMAIL = 'jessica@tudelu.com';
-const DRAWINGS_CC = 'mendy@tudelu.com';
+const DRAWINGS_CC = 'mendy@tudelu.com,chaim.fischer@tudelu.com';
 const SCHEDULE_EMAIL = 'jessica@tudelu.com';
-const SCHEDULE_CC = 'mendy@tudelu.com,tyler@tudelu.com';
+const SCHEDULE_CC = 'mendy@tudelu.com,tyler@tudelu.com,chaim.fischer@tudelu.com';
+const MEETING_WITH = 'Jessica';
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB per file
 const MAX_TOTAL_SIZE = 25 * 1024 * 1024; // 25MB total
 
@@ -488,6 +489,9 @@ let availableDays = [];
 function openSchedule() {
   document.getElementById('scheduleOverlay').classList.add('show');
   document.body.style.overflow = 'hidden';
+  if (typeof MEETING_WITH !== 'undefined') {
+    document.getElementById('schedSubtitle').innerHTML = '15-minute Google Meet with <strong>' + MEETING_WITH + '</strong> from Tudelu.';
+  }
   showStep(1);
 }
 
@@ -592,9 +596,9 @@ async function confirmBooking() {
     
     if (data.success === 'true' || data.success === true || resp.ok) {
       document.getElementById('confirmDetails').innerHTML = `
-        <strong>${selectedSlot.date}</strong><br>
-        ${selectedSlot.display} ET &middot; 15 minutes<br>
-        Confirmation will be sent to <strong>${email}</strong>
+        <strong>Meeting with ${typeof MEETING_WITH !== 'undefined' ? MEETING_WITH : 'Tudelu Team'}</strong><br>
+        <strong>${selectedSlot.date}</strong> at ${selectedSlot.display} ET &middot; 15 minutes<br>
+        Calendar invite will be sent to <strong>${email}</strong>
       `;
       showStep(3);
     } else {
@@ -609,9 +613,9 @@ async function confirmBooking() {
     
     setTimeout(() => {
       document.getElementById('confirmDetails').innerHTML = `
-        <strong>${selectedSlot.date}</strong><br>
-        ${selectedSlot.display} ET &middot; 15 minutes<br>
-        Confirmation will be sent to <strong>${email}</strong>
+        <strong>Meeting with ${typeof MEETING_WITH !== 'undefined' ? MEETING_WITH : 'Tudelu Team'}</strong><br>
+        <strong>${selectedSlot.date}</strong> at ${selectedSlot.display} ET &middot; 15 minutes<br>
+        Calendar invite will be sent to <strong>${email}</strong>
       `;
       showStep(3);
     }, 1000);
@@ -650,7 +654,7 @@ function generateStaticSlots() {
     
     <div class="schedule-header">
       <h3>Schedule a Call</h3>
-      <p>15-minute Google Meet with our team.</p>
+      <p id="schedSubtitle">15-minute Google Meet with our team.</p>
     </div>
     
     <div class="schedule-body">
@@ -706,7 +710,7 @@ function generateStaticSlots() {
           </div>
           <h3>You're All Set</h3>
           <div class="confirm-details" id="confirmDetails"></div>
-          <p>A Google Meet link has been sent to your email. See you there.</p>
+          <p id="confirmMsg">A calendar invite with Google Meet link will be sent to your email. See you there.</p>
         </div>
       </div>
     </div>
