@@ -555,7 +555,7 @@ async function confirmBooking() {
   var backendOk = false;
   var meetingWith = typeof MEETING_WITH !== 'undefined' ? MEETING_WITH : 'our team';
   try {
-    const BACKEND = 'https://sites.pplx.app/sites/proxy/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcmVmaXgiOiJ3ZWIvZGlyZWN0LWZpbGVzL2NvbXB1dGVyLzIzZTA2ZmYxLWE4OWMtNDA0Mi05MDc3LTE5ODRmZGYzMWU1MC90dWRlbHUtc2NoZWR1bGluZy1iYWNrZW5kLyIsInNpZCI6IjIzZTA2ZmYxLWE4OWMtNDA0Mi05MDc3LTE5ODRmZGYzMWU1MCIsImV4cCI6MTc3NjI3MTk1Nn0.taRrqA_wJ68Ra3QIxc14g4VNG-lap__TjhUJ7rtGwrw/web/direct-files/computer/23e06ff1-a89c-4042-9077-1984fdf31e50/tudelu-scheduling-backend/port/8000';
+    const BACKEND = 'https://sites.pplx.app/sites/proxy/eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJwcmVmaXgiOiJ3ZWIvZGlyZWN0LWZpbGVzL2NvbXB1dGVyLzIzZTA2ZmYxLWE4OWMtNDA0Mi05MDc3LTE5ODRmZGYzMWU1MC90dWRlbHUtc2NoZWR1bGluZy1iYWNrZW5kLyIsInNpZCI6IjIzZTA2ZmYxLWE4OWMtNDA0Mi05MDc3LTE5ODRmZGYzMWU1MCIsImV4cCI6MTc3NjI3MzYwNX0.tvo3JaF0ZmwxOFjEtWdWIY3g7XojAfnzFCWZuPMwQL8/web/direct-files/computer/23e06ff1-a89c-4042-9077-1984fdf31e50/tudelu-scheduling-backend/port/8000';
     const resp = await fetch(BACKEND + '/api/book', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
